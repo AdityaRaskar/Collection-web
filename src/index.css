@@ -6,7 +6,145 @@ html, body, #root {
   height: 100%;
 }
 
-/* Simple transitions */
+/* ─── Light mode tokens ─────────────────────────────────────── */
+:root {
+  --page-bg:        #ffffff;
+  --page-bg-2:      #f1f5f9;
+  --card-bg:        #f1f5f9;
+  --card-border:    rgba(15, 23, 42, 0.08);
+  --surface:        #ffffff;
+  --surface-hover:  #e2e8f0;
+  --text-primary:   #0f172a;
+  --text-secondary: #64748b;
+  --text-muted:     #94a3b8;
+  --border:         #e2e8f0;
+  --accent:         #2563eb;
+  --accent-end:     #4f46e5;
+  --shadow-sm:      0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md:      0 4px 12px rgba(15,23,42,0.10), 0 2px 4px rgba(15,23,42,0.06);
+}
+
+/* ─── Dark mode tokens ──────────────────────────────────────── */
+.dark {
+  --page-bg:        #0f172a;
+  --page-bg-2:      #1e293b;
+  --card-bg:        #1e293b;
+  --card-border:    rgba(255,255,255,0.06);
+  --surface:        #1e293b;
+  --surface-hover:  #334155;
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --border:         #334155;
+  --accent:         #3b82f6;
+  --accent-end:     #6366f1;
+  --shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:      0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* ─── Base ──────────────────────────────────────────────────── */
+body {
+  background-color: var(--page-bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.container {
+  max-width: 1100px;
+}
+
+/* ─── Utility classes ───────────────────────────────────────── */
 .transition-fast {
   transition: all 150ms ease-in-out;
+}
+
+/* Card: uses --card-bg which is slightly off-white/dark so it contrasts the page */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Surface: fully opaque white/dark panel (modals, sidebars, form panels) */
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent), var(--accent-end));
+  color: white;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: opacity 150ms ease;
+}
+.btn-primary:hover { opacity: 0.88; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+.btn-ghost:hover { background: var(--surface-hover); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+.btn-outline:hover { background: var(--surface-hover); }
+
+/* Input fields */
+.input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 0.375rem 0.625rem;
+  width: 100%;
+  transition: border-color 150ms ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+.input::placeholder { color: var(--text-muted); }
+
+/* Select */
+select.input {
+  cursor: pointer;
+}
+
+/* Label text */
+.label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Divider */
+.subtle-divider { border-bottom: 1px solid var(--border); }
+
+/* Prevent flex overflow */
+.safe-flex > * { min-width: 0; }
+
+/* Skeleton shimmer */
+.skeleton {
+  background: var(--card-border);
+  border-radius: 6px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }

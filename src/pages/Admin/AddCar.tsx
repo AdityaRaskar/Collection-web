@@ -3,9 +3,11 @@ import AdminCarForm from '../../components/AdminCarForm'
 
 export default function AddCar() {
   return (
-    <div className="max-w-3xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4">Add New Car</h2>
-      <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
+    <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)' }}>
+        Add New Car
+      </h2>
+      <div className="surface" style={{ padding: '1.5rem' }}>
         <AdminCarForm />
       </div>
     </div>

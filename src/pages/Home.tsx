@@ -4,68 +4,81 @@ import { Car } from '../types'
 import { ImageDisplayProvider, useImageDisplay } from '../contexts/ImageDisplayContext'
 import { useCars } from '../hooks/useCars'
 import SearchBar from '../components/SearchBar'
-import Filters from '../components/Filters'
 
 export default function Home() {
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(0)
   const [limit] = useState(12)
-  const [filters, setFilters] = useState<{ brand?: string; series?: string; year?: string; rarity?: string }>({})
+  const [gridType, setGridType] = useState<string>(() => localStorage.getItem('gridType') ?? 'comfortable')
   const [sort, setSort] = useState<string>('created_at:desc')
 
   const params: any = { q: query, limit, offset: page * limit }
-  if (filters.brand) params.brand = filters.brand
-  if (filters.series) params.series = filters.series
-  if (filters.year) params.year = Number(filters.year)
-  if (filters.rarity) params.rarity = filters.rarity
   if (sort) {
     const [orderBy, order] = sort.split(':')
     params.orderBy = orderBy
     params.order = order as any
   }
 
-    const { data, isLoading, isError, refetch } = useCars(params) as any
-    const cars = (data?.data ?? []) as Car[]
-    const total = (data?.count ?? 0) as number
+  const { data, isLoading, isError } = useCars(params) as any
+  const cars = (data?.data ?? []) as Car[]
+  const total = (data?.count ?? 0) as number
 
-  useEffect(() => {
-    // reset page when filters or query change
-    setPage(0)
-  }, [query, filters])
+  useEffect(() => { setPage(0) }, [query])
 
   function Controls() {
     const { fill, setFill } = useImageDisplay()
     return (
-      <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-600 dark:text-gray-300">Image mode:</label>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <label className="label">Image mode:</label>
         <button
-            onClick={() => setFill(!fill)}
-          className="px-2 py-1 border rounded text-sm bg-white dark:bg-gray-700"
+          onClick={() => setFill(!fill)}
+          className="btn-outline"
+          style={{ fontSize: '0.875rem', padding: '0.25rem 0.6rem' }}
         >
           {fill ? 'Fill' : 'Fit'}
         </button>
+
+        <label className="label">Grid:</label>
+        <select
+          value={gridType}
+          onChange={e => { setGridType(e.target.value); try { localStorage.setItem('gridType', e.target.value) } catch (_) {} }}
+          className="input"
+          style={{ width: 'auto', fontSize: '0.875rem', padding: '0.25rem 0.5rem' }}
+        >
+          <option value="comfortable">Comfortable</option>
+          <option value="compact">Compact</option>
+          <option value="list">List</option>
+        </select>
       </div>
     )
   }
 
+  const gridClass =
+    gridType === 'compact'
+      ? 'grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'
+      : gridType === 'list'
+      ? 'grid gap-4 grid-cols-1'
+      : 'grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6'
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold">My HotWheels Collection</h1>
-        <div className="text-sm text-gray-500">Total: {total}</div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+        <div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>My HotWheels Collection</h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Curated set — {total} items</p>
+        </div>
       </div>
 
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <SearchBar value={query} onChange={(v) => setQuery(v)} />
-        </div>
+      <div style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <SearchBar value={query} onChange={v => setQuery(v)} />
         <Controls />
-        <div className="mt-2 flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Sort:</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <label className="label">Sort:</label>
           <select
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="border px-2 py-1 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+            onChange={e => setSort(e.target.value)}
+            className="input"
+            style={{ width: 'auto', fontSize: '0.875rem', padding: '0.25rem 0.5rem' }}
           >
             <option value="name:asc">Name A-Z</option>
             <option value="name:desc">Name Z-A</option>
@@ -77,44 +90,31 @@ export default function Home() {
         </div>
       </div>
 
-      <Filters
-        brand={filters.brand}
-        series={filters.series}
-        year={filters.year}
-        rarity={filters.rarity}
-        onChange={(f) => setFilters(f)}
-      />
-
       {isLoading ? (
-        <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+        <div className={gridClass}>
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded shadow overflow-hidden animate-pulse">
-              <div className="bg-gray-100 dark:bg-gray-700" style={{ aspectRatio: '3/4' }} />
-              <div className="p-2">
-                <div className="h-3 bg-gray-100 dark:bg-gray-700 w-3/4 mb-1 rounded" />
-                <div className="h-2 bg-gray-100 dark:bg-gray-700 w-1/2 rounded" />
+            <div key={i} className="card" style={{ overflow: 'hidden' }}>
+              <div className="skeleton" style={{ aspectRatio: '3/4' }} />
+              <div style={{ padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <div className="skeleton" style={{ height: '0.75rem', width: '70%' }} />
+                <div className="skeleton" style={{ height: '0.6rem', width: '45%' }} />
               </div>
             </div>
           ))}
         </div>
       ) : isError ? (
-        <div className="text-red-500">Error loading cars.</div>
+        <div style={{ color: '#ef4444' }}>Error loading cars.</div>
       ) : cars.length === 0 ? (
-        <div className="text-gray-500">🚗 No matching cars found</div>
+        <div style={{ color: 'var(--text-muted)' }}>🚗 No matching cars found</div>
       ) : (
-        <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 lg:grid-cols-6">
-          {cars.map((c) => (
-            <CarCard key={c.id} car={c} />
-          ))}
+        <div className={gridClass}>
+          {cars.map(c => <CarCard key={c.id} car={c} />)}
         </div>
       )}
 
-      <div className="flex items-center justify-center mt-6">
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
         {(page + 1) * limit < total && (
-          <button
-            className="px-3 py-1 border rounded"
-            onClick={() => setPage((p) => p + 1)}
-          >
+          <button className="btn-outline" onClick={() => setPage(p => p + 1)}>
             Load more
           </button>
         )}

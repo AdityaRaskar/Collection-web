@@ -17,9 +17,10 @@ export default function App() {
       <AuthProvider>
         <ImageDisplayProvider>
           <ErrorBoundary>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            {/* Root div picks up body background + text via CSS vars set on :root / .dark */}
+            <div className="min-h-screen" style={{ color: 'var(--text-primary)' }}>
               <Header />
-              <main className="container mx-auto p-4">
+              <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 safe-flex">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/car/:id" element={<CarDetails />} />

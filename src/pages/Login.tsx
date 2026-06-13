@@ -18,9 +18,7 @@ export default function Login() {
       await signIn(email, password)
       navigate('/')
     } catch (err: any) {
-      const text = err?.message ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err))
-      setError(text || 'Login failed')
-      // eslint-disable-next-line no-console
+      setError(err?.message || 'Login failed')
       console.error('Login error:', err)
     } finally {
       setLoading(false)
@@ -28,35 +26,54 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-xl font-semibold mb-4">Admin Login</h2>
-      <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
+    <div style={{ maxWidth: '28rem', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)' }}>
+        Admin Login
+      </h2>
+      {/* surface panel: solid white/dark, no transparency */}
+      <div className="surface" style={{ padding: '1.5rem' }}>
         {user ? (
           <div>
-            <div className="mb-3">Signed in as {user.email}</div>
-            <button className="px-3 py-1 border rounded" onClick={() => signOut()}>
+            <p style={{ marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+              Signed in as <strong>{user.email}</strong>
+            </p>
+            <button className="btn-outline" onClick={() => signOut()}>
               Sign out
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <label className="block">
-              <span className="text-sm text-gray-600">Email</span>
-              <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border px-2 py-1 rounded mt-1" />
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <label style={{ display: 'block' }}>
+              <span className="label" style={{ display: 'block', marginBottom: '0.25rem' }}>Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="input"
+                placeholder="admin@example.com"
+                autoComplete="email"
+              />
             </label>
-            <label className="block">
-              <span className="text-sm text-gray-600">Password</span>
+            <label style={{ display: 'block' }}>
+              <span className="label" style={{ display: 'block', marginBottom: '0.25rem' }}>Password</span>
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border px-2 py-1 rounded mt-1"
+                onChange={e => setPassword(e.target.value)}
+                className="input"
+                placeholder="••••••••"
+                autoComplete="current-password"
               />
             </label>
-            {error && <div className="text-sm text-red-500">{error}</div>}
+            {error && <div style={{ color: '#ef4444', fontSize: '0.875rem' }}>{error}</div>}
             <div>
-              <button className="px-3 py-1 bg-blue-600 text-white rounded" disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign in'}
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={loading}
+                style={{ opacity: loading ? 0.7 : 1 }}
+              >
+                {loading ? 'Signing in…' : 'Sign in'}
               </button>
             </div>
           </form>
