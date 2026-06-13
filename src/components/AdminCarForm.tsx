@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { createCar, uploadCarImages, updateCar, fetchCarById } from '../services/cars'
 import { useQueryClient } from '@tanstack/react-query'
 import { Car } from '../types'
@@ -160,7 +160,21 @@ export default function AdminCarForm({ initial }: Props) {
     setFiles((f) => f.slice(0, index).concat(f.slice(index + 1)))
   }
 
-  // revoke previews on unmount
+
+  // Custom brand dropdown — avoids native <select> overflowing on mobile
+  const BRANDS = ['Hotwheels', 'Matchbox', 'Majorette', 'Other']
+  const [brandOpen, setBrandOpen] = useState(false)
+  const brandRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!brandOpen) return
+    const handler = (e: MouseEvent) => {
+      if (brandRef.current && !brandRef.current.contains(e.target as Node)) setBrandOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [brandOpen])
+
+    // revoke previews on unmount
   React.useEffect(() => {
     return () => {
       previewsRef.current.forEach((p) => {
@@ -180,11 +194,55 @@ export default function AdminCarForm({ initial }: Props) {
         <label className="block">Name</label>
         <input value={name} onChange={(e) => setName(e.target.value)} className="w-full border px-2 py-1 rounded" required />
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <label>
-          <div className="text-sm text-gray-600">Brand</div>
-          <input value={brand} onChange={(e) => setBrand(e.target.value)} className="w-full border px-2 py-1 rounded" />
-        </label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div>
+          <div className="text-sm text-gray-600 mb-1">Brand <span className="text-red-500">*</span></div>
+          {/* Custom dropdown — native <select> overflows viewport on mobile */}
+          <div ref={brandRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              onClick={() => setBrandOpen(o => !o)}
+              className="w-full border px-2 py-1 rounded text-left flex items-center justify-between"
+              style={{ background: 'white', minHeight: '2rem' }}
+            >
+              <span style={{ color: brand ? 'inherit' : '#9ca3af' }}>{brand || 'Select brand…'}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+            {/* Hidden native input for required validation */}
+            <input tabIndex={-1} required value={brand} onChange={() => {}} style={{ opacity: 0, height: 0, width: 0, position: 'absolute', pointerEvents: 'none' }} />
+            {brandOpen && (
+              <ul
+                style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 999,
+                  background: 'white', border: '1px solid #d1d5db', borderRadius: '6px',
+                  marginTop: '2px', padding: '4px 0', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                  listStyle: 'none', margin: 0,
+                }}
+              >
+                {BRANDS.map(b => (
+                  <li key={b}>
+                    <button
+                      type="button"
+                      onClick={() => { setBrand(b); setBrandOpen(false) }}
+                      style={{
+                        width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem',
+                        background: brand === b ? '#eff6ff' : 'transparent',
+                        color: brand === b ? '#2563eb' : '#111827',
+                        border: 'none', cursor: 'pointer', fontSize: '0.875rem',
+                      }}
+                      onMouseEnter={e => { if (brand !== b) (e.currentTarget as HTMLButtonElement).style.background = '#f3f4f6' }}
+                      onMouseLeave={e => { if (brand !== b) (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+                    >
+                      {b}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
         <label>
           <div className="text-sm text-gray-600">Series</div>
           <input value={series} onChange={(e) => setSeries(e.target.value)} className="w-full border px-2 py-1 rounded" />
