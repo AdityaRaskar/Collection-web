@@ -42,10 +42,13 @@ export async function fetchCars(filters: CarFilter = {}) {
 
 export async function fetchCarById(id: string) {
   const { data, error } = await supabase.from('cars').select('*').eq('id', id).single()
-  if (error) throw error
-  // debug fetched car
-  // eslint-disable-next-line no-console
-  console.debug('fetchCarById:', id, data)
+  if (error) {
+    // PGRST116 = "no rows returned" — Supabase's 404 equivalent
+    if (error.code === 'PGRST116' || error.message?.toLowerCase().includes('not found')) {
+      throw new Error('Car not found (404)')
+    }
+    throw error
+  }
   return data as Car
 }
 

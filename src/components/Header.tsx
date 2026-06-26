@@ -16,61 +16,32 @@ export default function Header() {
   }, [dark])
 
   const mobileMenu = open ? (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50 isolate">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+      <div 
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+        onClick={() => setOpen(false)} 
+      />
 
-      {/* Panel — rendered via portal so it's outside header's backdrop-filter context */}
-      <div
-        style={{
-          position: 'absolute',
-          right: 0,
-          top: 0,
-          height: '100%',
-          width: '18rem',
-          background: 'var(--surface)',
-          borderLeft: '1px solid var(--border)',
-          boxShadow: 'var(--shadow-md)',
-          backdropFilter: 'none',
-          WebkitBackdropFilter: 'none',
-          padding: '1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-          <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem' }}>Menu</span>
+      {/* Slide-out Panel */}
+      <div className="absolute right-0 top-0 h-full w-72 bg-[var(--surface)] border-l border-[var(--border)] shadow-md p-6 flex flex-col">
+        
+        <div className="flex items-center justify-between mb-6">
+          <span className="font-bold text-[var(--text-primary)] text-base">Menu</span>
           <button
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-secondary)',
-              fontSize: '1.1rem',
-              padding: '0.25rem',
-            }}
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 text-lg transition-colors"
           >
             ✕
           </button>
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <nav className="flex flex-col gap-2">
           <Link
             to="/"
             onClick={() => setOpen(false)}
-            style={{
-              display: 'block',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              textDecoration: 'none',
-              transition: 'background 150ms ease',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-hover)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            className="block px-3 py-2 rounded-md text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--surface-hover)] transition-colors"
           >
             Collection
           </Link>
@@ -79,8 +50,7 @@ export default function Header() {
             <Link
               to="/admin/add-car"
               onClick={() => setOpen(false)}
-              className="btn-primary"
-              style={{ display: 'inline-block', fontSize: '0.875rem', textDecoration: 'none', width: 'max-content' }}
+              className="btn-primary inline-block text-sm w-max mt-1 mb-1"
             >
               + Add New
             </Link>
@@ -89,29 +59,20 @@ export default function Header() {
           <Link
             to="/login"
             onClick={() => setOpen(false)}
-            style={{
-              display: 'block',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              textDecoration: 'none',
-              transition: 'background 150ms ease',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-hover)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            className="block px-3 py-2 rounded-md text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--surface-hover)] transition-colors"
           >
             {user ? 'Account' : 'Admin'}
           </Link>
 
-          <button
-            onClick={() => { setDark(d => !d); setOpen(false) }}
-            aria-label="Toggle dark mode"
-            className="btn-outline"
-            style={{ width: 'max-content', fontSize: '0.875rem', marginTop: '0.5rem' }}
-          >
-            {dark ? '☀ Light' : '☾ Dark'}
-          </button>
+          <div className="mt-4 pt-4 border-t border-[var(--border)]">
+            <button
+              onClick={() => { setDark(d => !d); setOpen(false) }}
+              aria-label="Toggle dark mode"
+              className="btn-outline text-sm w-full text-center"
+            >
+              {dark ? '☀ Switch to Light Mode' : '☾ Switch to Dark Mode'}
+            </button>
+          </div>
         </nav>
       </div>
     </div>
@@ -119,71 +80,77 @@ export default function Header() {
 
   return (
     <>
-      <header
-        className="subtle-divider"
-        style={{
-          background: 'var(--surface)',
-          boxShadow: 'var(--shadow-sm)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 40,
-        }}
-      >
-        <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
-            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow">
-              HW
+      <header className="sticky top-0 z-40 bg-[var(--surface)] shadow-sm border-b border-[var(--border)]">
+        <div className="container mx-auto py-3 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          
+          {/* Branding - Bulletproof flex layout for responsiveness */}
+          <Link to="/" className="flex items-center gap-3 min-w-0 text-decoration-none">
+            {/* shrink-0 guarantees the logo NEVER turns into a rectangle on small screens */}
+            <div className="w-10 h-10 shrink-0 rounded-md overflow-hidden bg-[var(--surface-hover)] flex items-center justify-center shadow-sm">
+              <img 
+                src="/src/assets/logo.png" 
+                alt="Brand Logo" 
+                className="w-full h-full object-cover" 
+                onError={(e) => {
+                  // Fallback in case logo.png fails to load
+                  console.error("Image not found at /logo.png", e);
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = '<span class="text-[var(--text-secondary)] font-bold text-xs">LOGO</span>';
+                }}
+              />
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.1rem', lineHeight: 1.2, color: 'var(--text-primary)' }}>
-                HotWheels Collection
+            
+            {/* min-w-0 and truncate prevent long text from breaking the UI on narrow devices */}
+            <div className="flex flex-col justify-center min-w-0">
+              <div className="font-extrabold text-base sm:text-[1.1rem] leading-tight text-[var(--text-primary)] truncate">
+                Predator's Collection
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <div className="text-[0.7rem] sm:text-xs text-[var(--text-muted)] truncate">
                 Curated diecast showcase
               </div>
             </div>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-4 safe-flex">
+          <nav className="hidden md:flex items-center gap-5 ml-4">
             <Link
               to="/"
-              style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}
-              className="transition-fast hover:text-indigo-500"
+              className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
             >
               Collection
             </Link>
+            
             {user && (
-              <Link to="/admin/add-car" className="btn-primary" style={{ fontSize: '0.875rem', textDecoration: 'none' }}>
+              <Link to="/admin/add-car" className="btn-primary text-sm shadow-sm">
                 + Add New
               </Link>
             )}
+            
             <Link
               to="/login"
-              style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}
-              className="transition-fast hover:text-indigo-500"
+              className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
             >
               {user ? 'Account' : 'Admin'}
             </Link>
+            
             <button
               onClick={() => setDark(d => !d)}
               aria-label="Toggle dark mode"
-              className="btn-outline"
-              style={{ fontSize: '0.875rem' }}
+              className="btn-outline flex items-center justify-center w-8 h-8 p-0 rounded-full text-sm"
+              title={dark ? 'Light mode' : 'Dark mode'}
             >
-              {dark ? '☀ Light' : '☾ Dark'}
+              {dark ? '☀' : '☾'}
             </button>
           </nav>
 
           {/* Mobile hamburger */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center shrink-0 ml-3">
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="btn-outline"
-              style={{ padding: '0.4rem' }}
+              className="btn-outline p-2 border-transparent bg-[var(--surface-hover)]"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>

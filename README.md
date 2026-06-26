@@ -1,4 +1,4 @@
-# HotWheels Collection
+# Predator's Collection
 
 Personal collection manager built with React, Vite, Tailwind, and Supabase.
 
