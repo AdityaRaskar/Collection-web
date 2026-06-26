@@ -141,8 +141,6 @@ export default function Home() {
               <option value="name:desc">Name Z-A</option>
               <option value="created_at:desc">Newest Added</option>
               <option value="created_at:asc">Oldest Added</option>
-              <option value="purchase_date:desc">Newest Purchase</option>
-              <option value="purchase_date:asc">Oldest Purchase</option>
             </select>
           </div>
 
