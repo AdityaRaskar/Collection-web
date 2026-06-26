@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import logo from '../assets/logo.png'
 
 export default function Header() {
   const { user } = useAuth()
@@ -88,7 +89,7 @@ export default function Header() {
             {/* shrink-0 guarantees the logo NEVER turns into a rectangle on small screens */}
             <div className="w-10 h-10 shrink-0 rounded-md overflow-hidden bg-[var(--surface-hover)] flex items-center justify-center shadow-sm">
               <img 
-                src="/src/assets/logo.png" 
+                src={logo} 
                 alt="Brand Logo" 
                 className="w-full h-full object-cover" 
                 onError={(e) => {
