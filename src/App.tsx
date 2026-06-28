@@ -10,6 +10,7 @@ import { ToastProvider } from './contexts/ToastContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { ImageDisplayProvider } from './contexts/ImageDisplayContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
                 </Routes>
               </main>
             </div>
+            <Analytics />
           </ErrorBoundary>
         </ImageDisplayProvider>
       </AuthProvider>
